@@ -12,32 +12,33 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/todo/delete")
-public class DeleteServlet extends HttpServlet{
+public class DeleteServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		
 		try {
-			int todoNo = Integer.parseInt(req.getParameter("todoNo"));
 			
+			int todoNo = Integer.parseInt( req.getParameter("todoNo") );
+			
+			// 서비스 호출 후 결과 반환받기
 			TodoListService service = new TodoListServiceImpl();
-			
 			int result = service.todoDelete(todoNo);
 			
 			HttpSession session = req.getSession();
 			
-			if(result > 0) {
-				session.setAttribute("message", "삭제 완료");
-				resp.sendRedirect("/");
-				return;
-			}
+			String message = null;
+			if(result > 0) message = "할 일이 삭제되었습니다!";
+			else			message = "todo가 존재하지 않습니다";
 			
-			session.setAttribute("message", "삭제 실패");
-			resp.sendRedirect("/todo/detail?todo="+todoNo);
+			session.setAttribute("message", message);
+			
+			resp.sendRedirect("/");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		
 	}
-	
 }
